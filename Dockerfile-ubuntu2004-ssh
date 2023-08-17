@@ -1,0 +1,13 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && \
+    apt-get install -y openssh-server  && \
+    echo 'root:1234' | chpasswd  && \
+    sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -ri 's/UsePAM yes/#UsePAM yes/g'                    /etc/ssh/sshd_config  && \
+    mkdir /var/run/sshd                                                           && \
+    apt-get clean
+
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+
