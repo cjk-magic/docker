@@ -1,13 +1,15 @@
 FROM centos:centos7
 
 RUN yum update -y && \
-    yum install -y epel-release openssh-server vim  && \
+    yum install -y epel-release openssh-server sudo nano epel-release openssl certmonger vim && \
     echo 'root:1234' | chpasswd  && \
     sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -ri 's/UsePAM yes/#UsePAM yes/g'                    /etc/ssh/sshd_config  && \
-    mkdir /var/run/sshd                                                           && \
-    yum clean all
+    mkdir /var/run/sshd ; chmod -rx /var/run/sshd                                 && \
+    systemctl enable sshd.service                                                 && \
+    yum clean all                                                                 
 
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+
+CMD ["/usr/sbin/init"]
 
