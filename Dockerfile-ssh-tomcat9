@@ -1,8 +1,8 @@
 FROM tomcat:9
 #SSH 서버 설치
-RUN apt-get update && \
-    apt-get install -y openssh-server  && \
-    echo 'root:1234' | chpasswd  && \
+RUN apt-get update                                                                && \
+    apt-get install -y openssh-server                                             && \
+    echo 'root:1234' | chpasswd                                                   && \
     sed -ri 's/^#?PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -ri 's/UsePAM yes/#UsePAM yes/g'                    /etc/ssh/sshd_config  && \
     mkdir /var/run/sshd                                                           && \
@@ -22,10 +22,16 @@ RUN echo "  <user username=\"tomcat\" password=\"tomcat\"  roles=\"manager-gui\"
 RUN echo "</tomcat-users>" >> /usr/local/tomcat/conf/tomcat-users.xml
 RUN sed -i '/^  <Valve/d' /usr/local/tomcat/webapps/manager/META-INF/context.xml
 
+RUN echo "export JAVA_HOME=/opt/java/openjdk"  >> /root/.bashrc
+
+#SSH Service Port
 EXPOSE 22
+#Tomcat Service Port
 EXPOSE 8080
 
 #SSH 서비스 실행
 CMD ["/usr/sbin/sshd", "-D"]
-#tomcat run
-CMD ["catalina.sh", "run"]
+
+#tomcat 서비스는Jenkins shell 실행
+# /usr/local/tomcat/bin/catalina.sh run &
+#CMD ["catalina.sh", "run"]
